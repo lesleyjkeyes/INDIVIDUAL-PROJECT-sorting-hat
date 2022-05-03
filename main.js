@@ -1,27 +1,10 @@
-// const house = [
-//   {
-//     id: 1,
-//     name: 'Gryffindor',
-//   },
-//   {
-//     id: 2,
-//     name: 'Hufflepuff'
-//   },
-//   {
-//     id: 3,
-//     name: 'Ravenclaw'
-//   },
-//   {
-//     id: 4,
-//     name: 'Slytherin'
-//   }
-// ]
-
+const house = ['Gryffindor', 'Hufflepuff', 'Slytherin', 'Ravenclaw']
+const randomHouse = house[Math.floor(Math.random() * house.length)]
 const students = [
   {
     id: 1,
     name: 'Harry Potter',
-    house: "Gryffindor",
+    house: 'Gryffindor',
     expel: false,
     image: "https://www.irishtimes.com/polopoly_fs/1.3170107.1501253408!/image/image.jpg_gen/derivatives/ratio_1x1_w1200/image.jpg"
   },
@@ -65,14 +48,65 @@ const hatCard = () => {
     <h5 class="card-title">Card title</h5>
     <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
     <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+    <div id='addStudentBtn'> 
+
+    </div>
     <div class="form-floating mb-3">
-    <input type="text" class="form-control" id="searchInput" placeholder="SEARCH">
-    <label for="searchInput">Search</label>
+      <input type="text" class="form-control" id="searchInput" placeholder="SEARCH">
+      <label for="searchInput">Search</label>
     </div>
   </div>
 </div>
   `
   renderToDom('#hatCard', domString)
+}
+
+// New Student Modal
+const newStudent = () => {
+  const domString = `
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#addStudent">
+  Add New Student
+  </button>
+  <!-- Modal -->
+  <div class="modal fade" id="addStudent" tabindex="-1" aria-labelledby="addStudent" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen-md-down">
+      <div class="modal-content">
+        <div class="modal-header">
+        <h5 class="modal-title">Add New Student</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </button>
+      </div>
+      <div class="modal-body" id="modal-body">
+      <form>
+        <div class="form-floating mb-3">
+          <input class="form-control form-control-lg" type="text" placeholder="Student Name" id="name" aria-label="name" required>
+          <label for="name">Student Name</label>
+        </div>
+    
+        <div class="form-floating mb-3">
+          <select class="form-select form-control-lg" id="type" aria-label="type" required>
+            <option value="">Expelled?</option>
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </select>
+          <label for="type">Type</label>
+        </div>
+
+        <div class="form-floating mb-3">
+          <input class="form-control form-control-lg" type="text" placeholder="Student Photo" id="studentPhoto" aria-label="studentPhoto" required>
+          <label for="image">Student Photo</label>
+        </div>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-success">Submit</button>
+      </form>
+      </div>
+    </div>
+  </div>
+
+  `
+
+  renderToDom('#addStudentBtn', domString)
 }
 
 const studentCards = (array) => {
@@ -94,18 +128,19 @@ const studentCards = (array) => {
 
 const buttonRow = () => {
   const domString = `
-  <div class="btn-group" role="group" aria-label="Basic outlined example">
-  <button type="button" class="btn btn-outline-primary" id="gryffindor-btn">Gryffindor</button>
-  <button type="button" class="btn btn-outline-primary" id="hufflepuff-btn">Hufflepuff</button>
-  <button type="button" class="btn btn-outline-primary" id="ravenclaw-btn">Ravenclaw</button>
-  <button type="button" class="btn btn-outline-primary" id="slytherin-btn">Slytherin</button>
-  <button type="button" class="btn btn-outline-primary" id="all-btn">All Students</button>
-</div>
+    <div class="btn-group" role="group" aria-label="Basic outlined example">
+      <button type="button" class="btn btn-outline-primary" id="gryffindor-btn">Gryffindor</button>
+      <button type="button" class="btn btn-outline-primary" id="hufflepuff-btn">Hufflepuff</button>
+      <button type="button" class="btn btn-outline-primary" id="ravenclaw-btn">Ravenclaw</button>
+      <button type="button" class="btn btn-outline-primary" id="slytherin-btn">Slytherin</button>
+      <button type="button" class="btn btn-outline-primary" id="all-btn">All Students</button>
+    </div>
   `
   renderToDom('#filterButtons', domString)
 }
 
 const eventListeners = () => {
+  const formModal = document.querySelector('#addStudent')
   document.querySelector('#filterButtons').addEventListener('click', (e) => {
     if (e.target.id === "all-btn") {
       studentCards(students);
@@ -123,13 +158,31 @@ const eventListeners = () => {
       studentCards(slytherinFilter)
     }
   })
+
+  const form = document.querySelector('form')
+  form.addEventListener('submit', (e) => {
+    e.preventDefault()
+    const addedStudent = {
+      id: students.length + 1,
+      name: document.querySelector('#name').value,
+      house: randomHouse,
+      expel: document.querySelector('#expel').value,
+      image: document.querySelector('#studentPhoto').value,
+    }
+    students.push(addedStudent)
+    studentCards(students)
+    formModal.hide()
+    form.reset()
+    console.log(students)
+  })
 }
 
 const startApp = () => {
   hatCard();
   buttonRow();
   studentCards(students);
-  eventListeners()
+  newStudent();
+  eventListeners();
 }
 
 startApp();
