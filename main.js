@@ -109,6 +109,7 @@ const newStudent = () => {
   renderToDom('#addStudentBtn', domString)
 }
 
+
 const studentCards = (array) => {
   let domString = '';
   for (const item of array) {
@@ -174,6 +175,15 @@ const eventListeners = () => {
     formModal.hide()
     form.reset()
     console.log(students)
+  })
+
+  const search = document.querySelector('#searchInput')
+  search.addEventListener('keyup', (e) => {
+    const userInput = event.target.value.toLowerCase();
+    const searchResult = students.filter(item =>
+    item.name.toLowerCase().includes(userInput)
+  )
+  studentCards(searchResult)
   })
 }
 
