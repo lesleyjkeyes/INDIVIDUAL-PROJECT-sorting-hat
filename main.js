@@ -30,6 +30,7 @@ const students = [
    
   }
 ]
+const expelledStudents = []
 
 console.log(students)
 
@@ -86,18 +87,17 @@ const newStudent = () => {
     
         <div class="form-floating mb-3">
           <select class="form-select form-control-lg" id="type" aria-label="type" required>
-            <option value="">Expelled?</option>
+          <option value="">Is this student expelled?</option>
             <option value="true">Yes</option>
             <option value="false">No</option>
           </select>
-          <label for="type">Type</label>
+          <label for="expel">Expelled?</label>
         </div>
 
         <div class="form-floating mb-3">
           <input class="form-control form-control-lg" type="text" placeholder="Student Photo" id="studentPhoto" aria-label="studentPhoto" required>
           <label for="image">Student Photo</label>
         </div>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <button type="submit" class="btn btn-success">Submit</button>
       </form>
       </div>
@@ -119,11 +119,28 @@ const studentCards = (array) => {
   <div class="card-body">
     <h5 class="card-title">${item.name}</h5>
     <p class="card-text">${item.house}</p>
-    <a href="#" class="btn btn-danger" id="expel">Expel</a>
+    <a href="#" class="btn btn-danger" id="expel--${item.id}">Expel</a>
   </div>
 </div>
     `
   renderToDom('#cardContainer', domString)
+  }
+}
+
+const expelledCards = (array) => {
+  let domString = ''
+  for (const item of array) {
+    domString += `
+    <div class="card" style="width: 18rem;">
+  <img src="${item.image}" class="card-img-top" alt="...">
+  <div class="card-body">
+    <h5 class="card-title">${item.name}</h5>
+    <p class="card-text">${item.house}</p>
+    <a href="#" class="btn btn-success" id="admit--${item.id}">Re-Admit</a>
+  </div>
+</div>
+    `
+    renderToDom('#expelledStudentContainer', domString)
   }
 }
 
@@ -157,7 +174,7 @@ const eventListeners = () => {
     } else if (e.target.id === "slytherin-btn") {
       const slytherinFilter = students.filter (item => item.house === "Slytherin")
       studentCards(slytherinFilter)
-    }
+    } 
   })
 
   const form = document.querySelector('form')
@@ -179,18 +196,49 @@ const eventListeners = () => {
 
   const search = document.querySelector('#searchInput')
   search.addEventListener('keyup', (e) => {
-    const userInput = event.target.value.toLowerCase();
+    const userInput = e.target.value.toLowerCase();
     const searchResult = students.filter(item =>
     item.name.toLowerCase().includes(userInput)
   )
   studentCards(searchResult)
   })
+
+  const expel = document.querySelector('#cardContainer').addEventListener('click', (e) => {
+    if (e.target.id) {
+      const [method, id] = e.target.id.split("--");
+      const index = students.findIndex((studentIndex => studentIndex.id === Number(id)))
+        if (e.target.id.includes('expel')) {
+          expelledStudents.push(...students.splice(index, 1))
+          studentCards(students)
+          expelledCards(expelledStudents)
+          console.log(students)
+          console.log(expelledStudents)
+        }
+
+      };
+
+
+  const admit = document.querySelector('#expelledStudentContainer').addEventListener('click', (e) => {
+    if (e.target.id) {
+      const [method, id] = e.target.id.split("--")
+      const index = expelledStudents.findIndex((expelledStudentsIndex => expelledStudentsIndex.id === Number (id)))
+        if (e.target.id.includes('admit')) {
+          students.push(...expelledStudents.splice(index, 1))
+          expelledCards(expelledStudents)
+          studentCards(students)
+        }
+    }
+  })
+      
+  }
+  )
 }
 
 const startApp = () => {
   hatCard();
   buttonRow();
   studentCards(students);
+  expelledCards(expelledStudents);
   newStudent();
   eventListeners();
 }
