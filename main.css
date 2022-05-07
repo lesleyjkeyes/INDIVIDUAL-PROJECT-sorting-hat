@@ -1,5 +1,25 @@
+body {
+  background-color: tan;
+}
+
+.studentcard {
+  margin: 10px;
+}
+
+.studentfilter {
+  background-color: white;
+  color: black;
+  border: black solid 1px;
+}
+
 #cardContainer {
   display: flex;
-  flex-flow: row-wrap;
-  
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+#expelledStudentContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 }

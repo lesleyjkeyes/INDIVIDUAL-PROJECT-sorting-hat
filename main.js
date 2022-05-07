@@ -13,7 +13,6 @@ const students = [
     name: 'Hermoine Granger',
     house: 'Hufflepuff',
     expel: false,
-    
   },
   {
     id: 3,
@@ -27,7 +26,6 @@ const students = [
     name: 'Draco Malfoy',
     house: 'Slytherin',
     expel: true,
-   
   }
 ]
 const expelledStudents = []
@@ -44,16 +42,14 @@ const renderToDom = (divId, textToRender) => {
 const hatCard = () => {
   const domString = `
   <div class="card mb-3">
-  <img src="..." class="card-img-top" alt="...">
   <div class="card-body">
-    <h5 class="card-title">Card title</h5>
-    <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-    <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+    <h5 class="card-title">Welcome to the Sorting Hat</h5>
+    <p class="card-text">Select "Add New Student" to add student and assign them to a house. Use the Search bar to search for students.</p>
     <div id='addStudentBtn'> 
 
     </div>
     <div class="form-floating mb-3">
-      <input type="text" class="form-control" id="searchInput" placeholder="SEARCH">
+      <input type="text" class="form-control" id="searchInput" placeholder="Search">
       <label for="searchInput">Search</label>
     </div>
   </div>
@@ -86,7 +82,7 @@ const newStudent = () => {
         </div>
     
         <div class="form-floating mb-3">
-          <select class="form-select form-control-lg" id="type" aria-label="type" required>
+          <select class="form-select form-control-lg" id="expel" aria-label="type" required>
           <option value="">Is this student expelled?</option>
             <option value="true">Yes</option>
             <option value="false">No</option>
@@ -98,7 +94,7 @@ const newStudent = () => {
           <input class="form-control form-control-lg" type="text" placeholder="Student Photo" id="studentPhoto" aria-label="studentPhoto" required>
           <label for="image">Student Photo</label>
         </div>
-        <button type="submit" class="btn btn-success">Submit</button>
+        <button type="submit" class="btn btn-success" data-dismiss="modal">Submit</button>
       </form>
       </div>
     </div>
@@ -112,53 +108,61 @@ const newStudent = () => {
 
 const studentCards = (array) => {
   let domString = '';
-  for (const item of array) {
-    domString += `
-    <div class="card" style="width: 18rem;">
-  <img src="${item.image}" class="card-img-top" alt="...">
-  <div class="card-body">
-    <h5 class="card-title">${item.name}</h5>
-    <p class="card-text">${item.house}</p>
-    <a href="#" class="btn btn-danger" id="expel--${item.id}">Expel</a>
+  if (array.length >= 1) {
+    for (const item of array) {
+      domString += `
+      <div class="card studentcard" style="width: 18rem;">
+    <img src="${item.image}" class="card-img-top" alt="...">
+    <div class="card-body">
+      <h5 class="card-title">${item.name}</h5>
+      <p class="card-text">${item.house}</p>
+      <a href="#" class="btn btn-danger" id="expel--${item.id}">Expel</a>
+    </div>
   </div>
-</div>
-    `
-  renderToDom('#cardContainer', domString)
+      `
+    renderToDom('#cardContainer', domString)
+    }
+  } else {
+    renderToDom('#cardContainer', domString)
   }
 }
 
 const expelledCards = (array) => {
   let domString = ''
-  for (const item of array) {
-    domString += `
-    <div class="card" style="width: 18rem;">
-  <img src="${item.image}" class="card-img-top" alt="...">
-  <div class="card-body">
-    <h5 class="card-title">${item.name}</h5>
-    <p class="card-text">${item.house}</p>
-    <a href="#" class="btn btn-success" id="admit--${item.id}">Re-Admit</a>
+  if (array.length >= 1) {
+    for (const item of array) {
+      domString += `
+      <div class="card studentcard" style="width: 18rem;">
+    <img src="${item.image}" class="card-img-top" alt="...">
+    <div class="card-body">
+      <h5 class="card-title">${item.name}</h5>
+      <p class="card-text">${item.house}</p>
+      <a href="#" class="btn btn-success" id="admit--${item.id}">Re-Admit</a>
+    </div>
   </div>
-</div>
-    `
+      `
+      renderToDom('#expelledStudentContainer', domString)
+    }
+  } else {
     renderToDom('#expelledStudentContainer', domString)
   }
 }
 
 const buttonRow = () => {
   const domString = `
-    <div class="btn-group" role="group" aria-label="Basic outlined example">
-      <button type="button" class="btn btn-outline-primary" id="gryffindor-btn">Gryffindor</button>
-      <button type="button" class="btn btn-outline-primary" id="hufflepuff-btn">Hufflepuff</button>
-      <button type="button" class="btn btn-outline-primary" id="ravenclaw-btn">Ravenclaw</button>
-      <button type="button" class="btn btn-outline-primary" id="slytherin-btn">Slytherin</button>
-      <button type="button" class="btn btn-outline-primary" id="all-btn">All Students</button>
+    <div class="btn-group" id = "btns" role="group" aria-label="Basic outlined example">
+      <button type="button" class="btn btn-outline-primary studentfilter" id="gryffindor-btn">Gryffindor</button>
+      <button type="button" class="btn btn-outline-primary studentfilter" id="hufflepuff-btn">Hufflepuff</button>
+      <button type="button" class="btn btn-outline-primary studentfilter" id="ravenclaw-btn">Ravenclaw</button>
+      <button type="button" class="btn btn-outline-primary studentfilter" id="slytherin-btn">Slytherin</button>
+      <button type="button" class="btn btn-outline-primary studentfilter" id="all-btn">All Students</button>
     </div>
   `
   renderToDom('#filterButtons', domString)
 }
 
 const eventListeners = () => {
-  const formModal = document.querySelector('#addStudent')
+  const formModal = new bootstrap.Modal(document.querySelector('#addStudent'))
   document.querySelector('#filterButtons').addEventListener('click', (e) => {
     if (e.target.id === "all-btn") {
       studentCards(students);
@@ -189,8 +193,8 @@ const eventListeners = () => {
     }
     students.push(addedStudent)
     studentCards(students)
-    formModal.hide()
-    form.reset()
+    form.reset();
+    formModal.hide();
     console.log(students)
   })
 
@@ -203,36 +207,37 @@ const eventListeners = () => {
   studentCards(searchResult)
   })
 
-  const expel = document.querySelector('#cardContainer').addEventListener('click', (e) => {
+  const expel = document.querySelector('#cardContainer')
+  expel.addEventListener('click', (e) => {
     if (e.target.id) {
       const [method, id] = e.target.id.split("--");
       const index = students.findIndex((studentIndex => studentIndex.id === Number(id)))
+
         if (e.target.id.includes('expel')) {
           expelledStudents.push(...students.splice(index, 1))
           studentCards(students)
           expelledCards(expelledStudents)
-          console.log(students)
-          console.log(expelledStudents)
+          } 
+        }
+      })
+
+
+    const admit = document.querySelector('#expelledStudentContainer')
+    admit.addEventListener('click', (e) => {
+      if (e.target.id) {
+        const [method, id] = e.target.id.split("--")
+        const index = expelledStudents.findIndex((expelledStudentsIndex => expelledStudentsIndex.id === Number (id)))
+
+          if (e.target.id.includes('admit')) {
+            students.push(...expelledStudents.splice(index, 1))
+            expelledCards(expelledStudents)
+            studentCards(students)
+          }
         }
 
-      };
-
-
-  const admit = document.querySelector('#expelledStudentContainer').addEventListener('click', (e) => {
-    if (e.target.id) {
-      const [method, id] = e.target.id.split("--")
-      const index = expelledStudents.findIndex((expelledStudentsIndex => expelledStudentsIndex.id === Number (id)))
-        if (e.target.id.includes('admit')) {
-          students.push(...expelledStudents.splice(index, 1))
-          expelledCards(expelledStudents)
-          studentCards(students)
-        }
-    }
-  })
+      })
       
   }
-  )
-}
 
 const startApp = () => {
   hatCard();
